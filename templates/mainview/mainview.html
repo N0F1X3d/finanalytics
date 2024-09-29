@@ -1,11 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Главная</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            margin-bottom: 30px;
+        }
+        .main-header {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .main-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .summary-box {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .summary-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .summary-box p {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .chart-container {
+            margin-top: 40px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #343a40;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Finanal</h1>
-    <h2>Something right here</h2>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">FinAnal</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Analytics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-header">
+            <h1>Welcome to Financial Analytics Dashboard</h1>
+            <p>Get real-time insights and financial performance analysis</p>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="summary-box">
+                    <h3>Total Revenue</h3>
+                    <p>$1,500,000</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-box">
+                    <h3>Net Profit</h3>
+                    <p>$320,000</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-box">
+                    <h3>Expenses</h3>
+                    <p>$600,000</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-box">
+                    <h3>Growth Rate</h3>
+                    <p>12%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="chart-container">
+            <h2 class="text-center">Financial Performance Overview</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Revenue Growth</h4>
+                    <img src="https://via.placeholder.com/500x300" alt="Revenue Growth Chart" class="img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <h4>Profit & Loss</h4>
+                    <img src="https://via.placeholder.com/500x300" alt="Profit and Loss Chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
