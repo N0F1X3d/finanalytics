@@ -51,6 +51,19 @@
                     <input class="search-input" type="search" name="query" placeholder="Поиск акций" aria-label="Поиск">
                     <!-- <button type="submit">Поиск акций</button> -->
                 </form>
+                <div class="stock-info-container">
+                {% for stock in stocks %}
+                    <div class="stock-info">
+                        <!-- <h3>{{ stock.ticker }}</h3> -->
+                        <p>Текущая цена: {{ stock.price }} RUB</p>
+                        {% if stock.logo_url %}
+                            <img src="{{ stock.logo_url }}" alt="Логотип {{ stock.ticker }}" width="150px">
+                        {% else %}
+                            <p>Логотип не найден</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
             </div>
         </div>
 
