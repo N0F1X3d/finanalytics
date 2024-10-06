@@ -48,22 +48,37 @@
                 <h1>Welcome to Financial Analytics Dashboard</h1>
                 <p>Get real-time insights and financial performance analysis</p>
                 <form action="/search/" method="GET">
-                    <input class="search-input" type="search" name="query" placeholder="Поиск акций" aria-label="Поиск">
-                    <!-- <button type="submit">Поиск акций</button> -->
+                    <input class="search-input" type="search" name="query" id="stock-search" placeholder="Поиск акций" aria-label="Поиск">
+                    <div id="suggestions"></div> <!-- Контейнер для подсказок -->
                 </form>
-                <div class="stock-info-container">
-                {% for stock in stocks %}
-                    <div class="stock-info">
-                        <!-- <h3>{{ stock.ticker }}</h3> -->
-                        <p>Текущая цена: {{ stock.price }} RUB</p>
-                        {% if stock.logo_url %}
-                            <img src="{{ stock.logo_url }}" alt="Логотип {{ stock.ticker }}" width="150px">
-                        {% else %}
-                            <p>Логотип не найден</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                </div>
+                
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                $(document).ready(function(){
+                    $('#stock-search').on('input', function(){
+                        var query = $(this).val();
+                        if (query.length > 2) {  // Начинаем поиск после 3 символов
+                            $.ajax({
+                                url: "{% url 'SearchSecurities' %}",
+                                data: {'query': query},
+                                success: function(data) {
+                                    $('#suggestions').empty();
+                                    if (data.length > 0) {
+                                        data.forEach(function(item) {
+                                            $('#suggestions').append('<div><a href="/securities_price/' + item.SECID + '/">' + item.SHORTNAME + '</a></div>');
+                                        });
+                                    } else {
+                                        $('#suggestions').append('<div>No results found</div>');
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#suggestions').empty();
+                        }
+                    });
+                });
+                </script>
+                
             </div>
         </div>
 
@@ -107,7 +122,7 @@
                     <img src="https://via.placeholder.com/500x300" alt="Revenue Growth Chart" class="img-fluid">
                 </div>
                 <div class="col-md-6">
-                    <h4>Profit & Loss</h4>
+                    <h4>Profit Loss</h4>
                     <img src="https://via.placeholder.com/500x300" alt="Profit and Loss Chart" class="img-fluid">
                 </div>
             </div>

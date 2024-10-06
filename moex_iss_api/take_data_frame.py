@@ -1,27 +1,28 @@
-import requests
 import apimoex
+from datetime import date, timedelta
+import requests
 import pandas as pd
+from bokeh.plotting import figure, show, output_file
+from bokeh.models import ColumnDataSource
+from bokeh.embed import components
 
-with requests.Session() as session:
-    # Устанавливаем параметры для запроса
-    url = 'https://iss.moex.com/iss/history/engines/stock/markets/shares/securities/SBER.json'
-    params = {
-        'from': '2023-01-01',  # начиная с этой даты
-        'till': '2023-12-31',  # до этой даты
-    }
-    
-    # Получаем данные
-    response = session.get(url, params=params)
-    
-    # Преобразуем данные в JSON
-    data = response.json()
-    
-    # Извлекаем данные из таблицы "history" и "columns" для соответствия столбцов
-    history_data = data['history']['data']
-    history_columns = data['history']['columns']
-    
-    # Преобразуем в DataFrame для удобства
-    df = pd.DataFrame(history_data, columns=history_columns)
-    
-    # Выводим первые несколько строк
-    print(df.head())
+def get_script_div(ticker):
+        with requests.Session() as session:
+            start_date = (date.today() - timedelta(days=365)).strftime('%Y-%m-%d')
+            end_date = date.today().strftime('%Y-%m-%d')
+            data = apimoex.get_market_history(session= session, security=ticker, start=start_date, end=end_date)
+            df = pd.DataFrame(data)
+            df['TRADEDATE'] = pd.to_datetime(df['TRADEDATE'])
+            df_tqbr = df[df['BOARDID'] == 'TQBR']
+            source = ColumnDataSource(df_tqbr)
+            p = figure(x_axis_type="datetime", title=f"{ticker} Closing Prices Over Last Year", 
+                        height=400, width=800)  # Используем height и width вместо plot_height и plot_width
+
+            # Добавляем линию (TRADEDATE по оси X и CLOSE по оси Y)
+            p.line(x='TRADEDATE', y='CLOSE', source=source, line_width=2, color='navy', alpha=0.7)
+
+            # Настройка осей
+            p.xaxis.axis_label = "Date"
+            p.yaxis.axis_label = "Price (CLOSE)"
+            script, div = components(p)
+            return script, div
