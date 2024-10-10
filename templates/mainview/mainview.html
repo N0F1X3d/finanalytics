@@ -45,11 +45,11 @@
     <div class="container">
         <div class="main-header">
             <div class="main-header-content">
-                <h1>Welcome to Financial Analytics Dashboard</h1>
-                <p>Get real-time insights and financial performance analysis</p>
+                <h1>Добро пожаловать на главную страницу</h1>
+                <p>Получайте ценную информацию и анализ финансовых показателей в режиме реального времени</p>
                 <form action="/search/" method="GET">
                     <input class="search-input" type="search" name="query" id="stock-search" placeholder="Поиск акций" aria-label="Поиск">
-                    <div id="suggestions"></div> <!-- Контейнер для подсказок -->
+                    <div class="suggestions" id="suggestions"></div> 
                 </form>
                 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -68,7 +68,7 @@
                                             $('#suggestions').append('<div><a href="/securities_price/' + item.SECID + '/">' + item.SHORTNAME + '</a></div>');
                                         });
                                     } else {
-                                        $('#suggestions').append('<div>No results found</div>');
+                                        $('#suggestions').append('<div>Нет результатов</div>');
                                     }
                                 }
                             });
@@ -78,40 +78,41 @@
                     });
                 });
                 </script>
+
+                
                 
             </div>
         </div>
-
-        <!-- Форма поиска -->
         
+        <div class="gradient-transition"></div>
 
         <!-- Summary Section -->
-        <div class="row text-center">
-            <div class="col-md-3">
-                <div class="summary-box">
-                    <h3>Total Revenue</h3>
-                    <p>$1,500,000</p>
-                </div>
+        <div class="summary">
+            <div class="heading-container">
             </div>
-            <div class="col-md-3">
-                <div class="summary-box">
-                    <h3>Net Profit</h3>
-                    <p>$320,000</p>
+            <h2 class="summary-header">О российском рынке</h2>
+            <div class="summary-content">
+
+                <div class="summary-block">
+                    <a href="" class="summary-link">Популярное</a>
+
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="summary-box">
-                    <h3>Expenses</h3>
-                    <p>$600,000</p>
+
+                <div class="summary-block">
+                    <a href="" class="summary-link">Торговые идеи</a>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="summary-box">
-                    <h3>Growth Rate</h3>
-                    <p>12%</p>
+
+                <div class="summary-block">
+                    <a href="" class="summary-link">Лидеры роста</a>
                 </div>
+
+                <div class="summary-block">
+                    <a href="{% url 'NewsSummary' %}" class="summary-link">Новости</a>
+                </div>
+
             </div>
         </div>
+
 
         <!-- Charts Section -->
         <div class="chart-container">
