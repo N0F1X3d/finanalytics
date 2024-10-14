@@ -4,6 +4,30 @@ from bs4 import BeautifulSoup
 from django.http import JsonResponse
 from moex_iss_api import get_all_securities, take_data_frame
 
+def events_summary(request):
+    url = 'https://iss.moex.com/iss/events.json'
+    response = requests.get(url)
+
+    events_list = []
+    if response.status_code == 200:
+        data = response.json()
+        for item in data['events']['data']:
+            events_list.append(
+                {
+                'title': item[2][0:60] + '...',
+                'source': f'https://www.moex.com/e{item[0]}',
+                'from': item[-2],
+                'till': item[-1],
+                }
+            )
+    else:
+        print(f"Ошибка: {response.status_code}")
+    
+    context = {
+        'events_list': events_list
+    }
+
+    return render(request, 'mainview/events_summary.html', context)
 
 def news_summary(request):
     url = 'https://iss.moex.com/iss/sitenews.json'
@@ -14,7 +38,7 @@ def news_summary(request):
         data = response.json()
         for item in data["sitenews"]["data"]:
             news_list.append({
-                'title': item[2],
+                'title': item[2][0:60] + '...',
                 'source': f'https://www.moex.com/n{item[0]}',
                 'published_at': item[-1]
             })
