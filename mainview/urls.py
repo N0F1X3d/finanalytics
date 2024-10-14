@@ -4,6 +4,7 @@ from mainview import views
 urlpatterns = [
     path('', views.homepageview, name='Главная'),
     path('securities/', views.securities_page, name='Securities'),
+    path('securities/<str:security_type>/', views.get_securities, name='get_securities'),
     path('search_securities/', views.search_securities, name='SearchSecurities'),
     path('securities_price/<str:ticker>/', views.securitie_price_chart, name='SecuritiesPriceChart'),
     path('news/', views.news_summary, name='NewsSummary'),
