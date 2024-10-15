@@ -1,11 +1,14 @@
 from django.db import models
 
 class Security(models.Model):
-    SECID = models.CharField(max_length=20, unique=True)  # Уникальный идентификатор бумаги
-    SHORTNAME = models.CharField(max_length=100)          # Краткое название
-    BOARDID = models.CharField(max_length=10)             # Идентификатор рынка
-    MARKET = models.CharField(max_length=10)              # Тип рынка (shares или bonds)
-    updated_at = models.DateTimeField(auto_now=True)      # Время последнего обновления
+    ticker = models.CharField(max_length=10)
+    name = models.CharField(max_length=100)
+    current_price = models.DecimalField(max_digits=10, decimal_places=2)
+    market_cap = models.BigIntegerField()
 
-    def __str__(self):
-        return self.SHORTNAME
+class Bond(models.Model):
+    identifier = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
+    yield_to_maturity = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    duration = models.DecimalField(max_digits=5, decimal_places=2)

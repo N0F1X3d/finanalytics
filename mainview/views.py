@@ -2,50 +2,15 @@ import requests
 from django.shortcuts import render
 from bs4 import BeautifulSoup
 from django.http import JsonResponse
+from moex_iss_api.get_news import get_news
+from moex_iss_api.get_events import get_events
 from moex_iss_api import get_all_securities, take_data_frame
 from django.core.cache import cache
-from models import Security
+from mainview.models import Security
 
-def events_summary(request):
-    url = 'https://iss.moex.com/iss/events.json'
-    response = requests.get(url)
-
-    events_list = []
-    if response.status_code == 200:
-        data = response.json()
-        for item in data['events']['data']:
-            events_list.append(
-                {
-                'title': item[2][0:60] + '...',
-                'source': f'https://www.moex.com/e{item[0]}',
-                'from': item[-2],
-                'till': item[-1],
-                }
-            )
-    else:
-        print(f"Ошибка: {response.status_code}")
-    
-    context = {
-        'events_list': events_list
-    }
-
-    return render(request, 'mainview/events_summary.html', context)
-
-def news_summary(request):
-    url = 'https://iss.moex.com/iss/sitenews.json'
-    response = requests.get(url)
-
-    news_list = []
-    if response.status_code == 200:
-        data = response.json()
-        for item in data["sitenews"]["data"]:
-            news_list.append({
-                'title': item[2][0:60] + '...',
-                'source': f'https://www.moex.com/n{item[0]}',
-                'published_at': item[-1]
-            })
-    else:
-        print(f"Ошибка: {response.status_code}")
+#Страница со списком новостей
+async def news_summary(request):
+    news_list = await get_news()
 
     context = {
         'news_list': news_list
@@ -53,14 +18,20 @@ def news_summary(request):
     
     return render(request, 'mainview/news_summary.html', context)
 
+#Страница со списком мероприятий
+async def events_summary(request):
+    events_list = await get_events()
+
+    context = {
+        'events_list': events_list
+    }
+
+    return render(request, 'mainview/events_summary.html', context)
+
 def homepageview(request):
     return render(request, 'mainview/mainview.html')
 
 # Страница со списком акций
-# def securities_page(request):
-#     securities_list = get_all_securities.get_securities_list()
-#     return render(request, 'mainview/securities.html', {'securities': securities_list})
-
 def securities_page(request):
     # Проверяем кэш на наличие данных
     securities_list = cache.get('securities_list')
