@@ -51,6 +51,7 @@
                     <input class="search-input" type="search" name="query" id="stock-search" placeholder="Поиск акций" aria-label="Поиск">
                     <div class="suggestions" id="suggestions"></div> 
                 </form>
+
                 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
@@ -82,6 +83,7 @@
                 
                 
             </div>
+            
         </div>
         
         <div class="gradient-transition"></div>
@@ -98,11 +100,11 @@
                 </div>
 
                 <div class="summary-block">
-                    <a href="" class="summary-link">Торговые идеи</a>
+                    <a href="{% url 'FallLeaders'%}" class="summary-link">Лидеры падений</a>
                 </div>
 
                 <div class="summary-block">
-                    <a href="" class="summary-link">Лидеры роста</a>
+                    <a href="{% url 'GrowthLeaders'%}" class="summary-link">Лидеры роста</a>
                 </div>
 
                 <div class="summary-block">
