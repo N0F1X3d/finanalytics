@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лидеры падений</title>
+    <link rel="stylesheet" href="../../static/styles/mainpage.css">
+    <style>
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .leaderboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .leader-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            width: 250px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .leader-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .leader-card p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .leader-card .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .leader-card .btn:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Лидеры падений</h1>
+        <div class="leaderboard">
+            {% for stock in fall_leaders %}
+            <div class="leader-card">
+                <h3>{{ stock.SHORTNAME }}</h3>
+                <p>Падение: {{ stock.DROP }}%</p>
+                <p>Цена: {{ stock.LAST }} руб.</p>
+                <a href="/securities_price/{{ stock.SECID }}/" class="btn btn-primary">Подробнее</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

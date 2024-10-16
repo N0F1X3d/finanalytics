@@ -1,9 +1,8 @@
-import requests
 from django.shortcuts import render
-from bs4 import BeautifulSoup
 from django.http import JsonResponse
 from moex_iss_api.get_news import get_news
 from moex_iss_api.get_events import get_events
+from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising, process_securities
 from moex_iss_api import get_all_securities, take_data_frame
 from django.core.cache import cache
 from mainview.models import Security
@@ -58,9 +57,22 @@ def securitie_price_chart(request, ticker):
     return render(request, 'moex_iss_api/securitie_price.html', {'script':script, 'div':div, 'ticker':ticker})
 
 def search_securities(request):
+
     query = request.GET.get('query', '')
     if query:
         securities_list = get_all_securities.get_securities_list()
         filtered_securities = [sec for sec in securities_list if query.lower() in sec['SHORTNAME'].lower()]
         return JsonResponse(filtered_securities, safe=False)
     return JsonResponse([], safe=False)
+
+# Асинхронное представление для лидеров роста
+async def growth_leaders_view(request):
+    growth_leaders = await get_leaders_rising()  # Асинхронный вызов функции
+    context = {'growth_leaders': growth_leaders}
+    return render(request, 'mainview/growth_leaders.html', context)
+
+# Асинхронное представление для лидеров падений
+async def fall_leaders_view(request):
+    fall_leaders = await get_leaders_falling()  # Асинхронный вызов функции
+    context = {'fall_leaders': fall_leaders}
+    return render(request, 'mainview/fall_leaders.html', context)
