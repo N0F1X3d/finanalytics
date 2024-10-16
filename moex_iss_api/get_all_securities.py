@@ -1,14 +1,13 @@
 import httpx
 import pandas as pd
+from mainview.models import Security, Bond
+import datetime
 
 def get_securities_list():
     urls = {
         "shares": "https://iss.moex.com/iss/engines/stock/markets/shares/securities.json",  # Акции
         "bonds": "https://iss.moex.com/iss/engines/stock/markets/bonds/securities.json",   # Облигации
-        #"funds": "https://iss.moex.com/iss/engines/stock/markets/funds/securities.json"    # Фонды (ETF и ПИФы)
     }
-    
-    all_securities = []
 
     with httpx.Client() as client:
         for market, url in urls.items():
@@ -22,13 +21,30 @@ def get_securities_list():
             # Преобразуем в DataFrame
             df = pd.DataFrame(securities_data, columns=securities_columns)
 
-            # Оставляем только важные столбцы
-            df = df[['SECID', 'SHORTNAME', 'BOARDID']]
-
-            # Добавляем информацию о типе рынка
-            df['MARKET'] = market
-
-            # Преобразуем DataFrame в список словарей и добавляем к итоговому списку
-            all_securities.extend(df.to_dict(orient='records'))
-
-    return all_securities
+            # Оставляем только важные столбцы и сохраняем их в базу данных
+            match market:
+                case 'shares':
+                    df = df[['SECID', 'SHORTNAME', 'PREVPRICE']]
+                    df['PREVPRICE'] = df['PREVPRICE'].fillna(0.0)
+                    # Проход по каждой строке DataFrame
+                    for _, row in df.iterrows():
+                        Security.objects.update_or_create(
+                            ticker=row['SECID'],
+                            defaults={
+                                'name': row['SHORTNAME'],
+                                'current_price': row['PREVPRICE'],
+                            }
+                        )
+                case 'bonds':
+                    df = df[['SECID', 'SHORTNAME', 'COUPONPERCENT', 'MATDATE']]
+                    df['COUPONPERCENT'] = df['COUPONPERCENT'].fillna(0.0)
+                    df = df[df['MATDATE']>=str(datetime.date.today())]
+                    # Проход по каждой строке DataFrame
+                    for _, row in df.iterrows():
+                        Bond.objects.update_or_create(
+                            ticker=row['SECID'],
+                            defaults={
+                                'name': row['SHORTNAME'],
+                                'current_price': row['COUPONPERCENT'],
+                            }
+                        )

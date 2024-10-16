@@ -1,16 +1,16 @@
-import requests
 from django.shortcuts import render
-from bs4 import BeautifulSoup
 from django.http import JsonResponse
-from moex_iss_api.get_news import get_news
-from moex_iss_api.get_events import get_events
-from moex_iss_api import get_all_securities, take_data_frame
+from moex_iss_api import get_all_securities, take_data_frame, get_events, get_news
 from django.core.cache import cache
-from mainview.models import Security
+from mainview.models import Security, Bond
+
+#Главная страница
+def homepageview(request):
+    return render(request, 'mainview/mainview.html')
 
 #Страница со списком новостей
 async def news_summary(request):
-    news_list = await get_news()
+    news_list = await get_news.get_news()
 
     context = {
         'news_list': news_list
@@ -20,7 +20,7 @@ async def news_summary(request):
 
 #Страница со списком мероприятий
 async def events_summary(request):
-    events_list = await get_events()
+    events_list = await get_events.get_events()
 
     context = {
         'events_list': events_list
@@ -28,31 +28,24 @@ async def events_summary(request):
 
     return render(request, 'mainview/events_summary.html', context)
 
-def homepageview(request):
-    return render(request, 'mainview/mainview.html')
 
 # Страница со списком акций
 def securities_page(request):
-    # Проверяем кэш на наличие данных
-    securities_list = cache.get('securities_list')
+    security_type = request.GET.get('type')
+    get_all_securities.get_securities_list()
+    filtered_securities = []
+    if security_type:
+        match security_type:
+            case 'shares':
+                filtered_securities = Security.objects.values('ticker', 'name', 'current_price')
+            case 'bonds':
+                filtered_securities = Bond.objects.values('ticker', 'name', 'current_price')
+            case _:
+                filtered_securities = []
+    return render(request, 'mainview/securities.html', {'securities': filtered_securities})
 
-    if not securities_list:
-        # Если кэш пуст, получаем данные из API и сохраняем в кэш
-        securities_list = get_all_securities.get_securities_list()
-        cache.set('securities_list', securities_list, timeout=60 * 15)  # Кэшируем на 15 минут
 
-    return render(request, 'mainview/securities.html', {'securities': securities_list})
-
-# Обработчик запросов на получение данных о ценных бумагах
-def get_securities(request, security_type):
-    if security_type not in ['shares', 'bonds']:
-        return JsonResponse({'error': 'Invalid security type'}, status=400)
-
-    # Получаем данные из базы данных
-    filtered_securities = Security.objects.filter(MARKET=security_type).values('SECID', 'SHORTNAME', 'BOARDID')
-    
-    return JsonResponse(list(filtered_securities), safe=False)
-
+#Страница с графиком акции
 def securitie_price_chart(request, ticker):
     script, div = take_data_frame.get_script_div(ticker)
     return render(request, 'moex_iss_api/securitie_price.html', {'script':script, 'div':div, 'ticker':ticker})
