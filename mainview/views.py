@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from moex_iss_api.get_news import get_news
-from moex_iss_api.get_events import get_events
 from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising, process_securities
-from moex_iss_api import get_all_securities, take_data_frame
+from moex_iss_api import get_all_securities, take_data_frame, get_events, get_news
 from django.core.cache import cache
 from mainview.models import Security, Bond
+from django.db.models import Q
 
 #Главная страница
 def homepageview(request):
@@ -32,20 +31,58 @@ async def events_summary(request):
     return render(request, 'mainview/events_summary.html', context)
 
 
-# Страница со списком акций
+
+#get_all_securities.get_securities_list() это потом закинуть в celery
+# Страница со списком акций и облигаций
 def securities_page(request):
     security_type = request.GET.get('type')
-    get_all_securities.get_securities_list()
+    ticker = request.GET.get('ticker')
+    min_value = request.GET.get('min_value')
+    max_value = request.GET.get('max_value')
+    sort_by = request.GET.get('sort_by')
+
+    queryset = None
     filtered_securities = []
+    filter_label = "Цена"  # По умолчанию для акций
+
+    # Определяем, с каким типом ценных бумаг работаем
     if security_type:
         match security_type:
             case 'shares':
-                filtered_securities = Security.objects.values('ticker', 'name', 'current_price')
+                queryset = Security.objects.all()
+                filter_label = "Цена"  # Для акций используем "Цена"
             case 'bonds':
-                filtered_securities = Bond.objects.values('ticker', 'name', 'current_price')
-            case _:
-                filtered_securities = []
-    return render(request, 'mainview/securities.html', {'securities': filtered_securities})
+                queryset = Bond.objects.all()
+                filter_label = "Доходность"  # Для облигаций используем "Доходность"
+
+        if queryset is not None:
+            # Применяем фильтры
+            if min_value:
+                queryset = queryset.filter(current_price__gte=min_value)
+            if max_value:
+                queryset = queryset.filter(current_price__lte=max_value)
+            if ticker:
+                queryset = queryset.filter(ticker__icontains=ticker)
+
+            # Применяем сортировку
+            if sort_by:
+                match sort_by:
+                    case 'ticker_asc':
+                        queryset = queryset.order_by('ticker')
+                    case 'ticker_desc':
+                        queryset = queryset.order_by('-ticker')
+                    case 'price_asc':
+                        queryset = queryset.order_by('current_price')
+                    case 'price_desc':
+                        queryset = queryset.order_by('-current_price')
+
+            filtered_securities = queryset.values('ticker', 'name', 'current_price')
+
+    return render(request, 'mainview/securities.html', {
+        'securities': filtered_securities,
+        'security_type': security_type,
+        'filter_label': filter_label  # Динамическая метка для фильтра
+    })
 
 
 #Страница с графиком акции

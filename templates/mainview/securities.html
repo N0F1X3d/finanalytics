@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Securities List</title>
+    <title>Список ценных бумаг</title>
     <style>
         table {
             width: 100%;
@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <h1>List of Securities</h1>
+    <h1>Список ценных бумаг</h1>
 
     <!-- Кнопки для выбора типа ценных бумаг -->
     <form method="get">
@@ -28,14 +28,41 @@
         <button type="submit" name="type" value="bonds">Show Bonds</button>
     </form>
 
-    <!-- Таблица с акциями -->
+    <!-- Фильтры и сортировка -->
+    <form method="get">
+        <input type="hidden" name="type" value="{{ security_type }}">
+
+        <!-- Фильтр по тикеру -->
+        <label for="ticker">Тикер:</label>
+        <input type="text" id="ticker" name="ticker" placeholder="Введите тикер">
+
+        <!-- Фильтр по цене/доходности -->
+        <label for="min_value">Мин. {{ filter_label }}:</label>
+        <input type="number" id="min_value" name="min_value" step="0.01">
+
+        <label for="max_value">Макс. {{ filter_label }}:</label>
+        <input type="number" id="max_value" name="max_value" step="0.01">
+
+        <!-- Сортировка -->
+        <label for="sort_by">Сортировка:</label>
+        <select id="sort_by" name="sort_by">
+            <option value="ticker_asc">Тикер A-Z</option>
+            <option value="ticker_desc">Тикер Z-A</option>
+            <option value="price_asc">По возрастанию {{ filter_label }}</option>
+            <option value="price_desc">По убыванию {{ filter_label }}</option>
+        </select>
+
+        <button type="submit">Применить фильтры</button>
+    </form>
+
+    <!-- Таблица с акциями или облигациями -->
     {% if securities %}
     <table>
         <thead>
             <tr>
                 <th>Тикер</th>
                 <th>Название</th>
-                <th>Доходность</th>
+                <th>{{ filter_label }}</th>
             </tr>
         </thead>
         <tbody>
@@ -43,13 +70,19 @@
             <tr>
                 <td>{{ security.ticker }}</td>
                 <td>{{ security.name }}</td>
-                <td>{{ security.current_price }}%</td>
+                <td>
+                    {% if security_type == 'shares' %}
+                        {{ security.current_price }} ₽
+                    {% else %}
+                        {{ security.current_price }}%
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p>No data available. Please select a type of securities.</p>
+    <p>Нет данных, пожалуйста выберите тип ценных бумаг.</p>
     {% endif %}
     
 </body>
