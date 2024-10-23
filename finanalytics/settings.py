@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainview.apps.MainviewConfig'
+    'mainview.apps.MainviewConfig',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +125,7 @@ STATICFILES_DIRS = [BASE_DIR, 'static']
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis как брокер
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Redis для хранения результатов

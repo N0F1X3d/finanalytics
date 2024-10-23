@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising, process_securities
-from moex_iss_api import get_all_securities, take_data_frame, get_events, get_news
+from moex_iss_api import take_data_frame, get_events, get_news
 from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
@@ -31,8 +31,6 @@ async def events_summary(request):
     return render(request, 'mainview/events_summary.html', context)
 
 
-
-#get_all_securities.get_securities_list() это потом закинуть в celery
 # Страница со списком акций и облигаций
 def securities_page(request):
     security_type = request.GET.get('type')
@@ -91,12 +89,11 @@ def securitie_price_chart(request, ticker):
     return render(request, 'moex_iss_api/securitie_price.html', {'script':script, 'div':div, 'ticker':ticker})
 
 def search_securities(request):
-
     query = request.GET.get('query', '')
+    filtered_securities =[]
     if query:
-        securities_list = get_all_securities.get_securities_list()
-        filtered_securities = [sec for sec in securities_list if query.lower() in sec['SHORTNAME'].lower()]
-        return JsonResponse(filtered_securities, safe=False)
+        filtered_securities = list(Security.objects.filter(name__icontains=query) | 
+                               Security.objects.filter(ticker__icontains=query).values('ticker', 'name'))
     return JsonResponse([], safe=False)
 
 # Асинхронное представление для лидеров роста

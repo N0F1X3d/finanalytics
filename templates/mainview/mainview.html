@@ -55,35 +55,32 @@
                 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
-                $(document).ready(function(){
-                    $('#stock-search').on('input', function(){
-                        var query = $(this).val();
-                        if (query.length > 2) {  // Начинаем поиск после 3 символов
-                            $.ajax({
-                                url: "{% url 'SearchSecurities' %}",
-                                data: {'query': query},
-                                success: function(data) {
-                                    $('#suggestions').empty();
-                                    if (data.length > 0) {
-                                        data.forEach(function(item) {
-                                            $('#suggestions').append('<div><a href="/securities_price/' + item.SECID + '/">' + item.SHORTNAME + '</a></div>');
-                                        });
-                                    } else {
-                                        $('#suggestions').append('<div>Нет результатов</div>');
+                    $(document).ready(function(){
+                        $('#stock-search').on('input', function(){
+                            let query = $(this).val();
+                            console.log(query)
+                            if (query.length > 0) {  // Начинаем поиск после 1 символа
+                                $.ajax({
+                                    url: "{% url 'SearchSecurities' %}",
+                                    data: {'query': query},
+                                    success: function(data) {
+                                        $('#suggestions').empty();
+                                        if (data.length > 0) {
+                                            data.forEach(function(item) {
+                                                $('#suggestions').append('<div><a href="/securities_price/' + item.ticker + '/">' + item.name + '</a></div>');
+                                            });
+                                        } else {
+                                            $('#suggestions').append('<div>Нет результатов</div>');
+                                        }
                                     }
-                                }
-                            });
-                        } else {
-                            $('#suggestions').empty();
-                        }
+                                });
+                            } else {
+                                $('#suggestions').empty();
+                            }
+                        });
                     });
-                });
                 </script>
-
-                
-                
             </div>
-            
         </div>
         
         <div class="gradient-transition"></div>
