@@ -163,4 +163,4 @@ cython_debug/
 
 secret.py
 static/
-celerybeat-schedule
+celerybeat-schedule.*

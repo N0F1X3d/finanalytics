@@ -51,36 +51,35 @@
                     <input class="search-input" type="search" name="query" id="stock-search" placeholder="Поиск акций" aria-label="Поиск">
                     <div class="suggestions" id="suggestions"></div> 
                 </form>
-
                 
-                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
-                    $(document).ready(function(){
-                        $('#stock-search').on('input', function(){
-                            let query = $(this).val();
-                            console.log(query)
-                            if (query.length > 0) {  // Начинаем поиск после 1 символа
-                                $.ajax({
-                                    url: "{% url 'SearchSecurities' %}",
-                                    data: {'query': query},
-                                    success: function(data) {
-                                        $('#suggestions').empty();
-                                        if (data.length > 0) {
-                                            data.forEach(function(item) {
-                                                $('#suggestions').append('<div><a href="/securities_price/' + item.ticker + '/">' + item.name + '</a></div>');
-                                            });
-                                        } else {
-                                            $('#suggestions').append('<div>Нет результатов</div>');
-                                        }
-                                    }
-                                });
-                            } else {
-                                $('#suggestions').empty();
-                            }
-                        });
+                    document.getElementById('stock-search').addEventListener('keyup', function() {
+                        const query = this.value;
+                        if (query.length < 2) return;
+                
+                        fetch(`/search/?query=${query}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const suggestionsContainer = document.getElementById('suggestions');
+                            suggestionsContainer.innerHTML = ''; // Очищаем предыдущие подсказки
+                
+                            data.filtered_securities.forEach(security => {
+                                const suggestion = document.createElement('a');
+                                suggestion.classList.add('suggestion-item');
+                                suggestion.textContent = `${security.name} (${security.ticker})`;
+                                suggestion.href = `/securities_price/${security.ticker}/`;  // Ссылка на страницу акции
+                                suggestionsContainer.appendChild(suggestion);
+                            });
+                        })
+                        .catch(error => console.error('Ошибка при поиске акций:', error));
                     });
                 </script>
-            </div>
+             </div>
         </div>
         
         <div class="gradient-transition"></div>

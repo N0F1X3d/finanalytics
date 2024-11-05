@@ -90,11 +90,11 @@ def securitie_price_chart(request, ticker):
 
 def search_securities(request):
     query = request.GET.get('query', '')
-    filtered_securities =[]
+    filtered_securities = []
     if query:
-        filtered_securities = list(Security.objects.filter(name__icontains=query) | 
-                               Security.objects.filter(ticker__icontains=query).values('ticker', 'name'))
-    return JsonResponse([], safe=False)
+        securities = Security.objects.filter(name__icontains=query) | Security.objects.filter(ticker__icontains=query)
+        filtered_securities = list(securities.values('name', 'ticker'))
+    return JsonResponse({'filtered_securities': filtered_securities})
 
 # Асинхронное представление для лидеров роста
 async def growth_leaders_view(request):
@@ -107,3 +107,4 @@ async def fall_leaders_view(request):
     fall_leaders = await get_leaders_falling()  # Асинхронный вызов функции
     context = {'fall_leaders': fall_leaders}
     return render(request, 'mainview/fall_leaders.html', context)
+
