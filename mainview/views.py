@@ -85,8 +85,10 @@ def securities_page(request):
 
 #Страница с графиком акции
 def securitie_price_chart(request, ticker):
-    script, div = take_data_frame.get_script_div(ticker)
-    return render(request, 'moex_iss_api/securitie_price.html', {'script':script, 'div':div, 'ticker':ticker})
+    chart_html = take_data_frame.get_chart_html(ticker)
+
+    # Передаем график в шаблон
+    return render(request, 'moex_iss_api/securitie_price.html', {'chart': chart_html, 'ticker': ticker})
 
 def search_securities(request):
     query = request.GET.get('query', '')

@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ ticker }} Closing Prices</title>
-    <!-- Важно включить CSS и JS Bokeh -->
-    <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-3.6.0.min.css" type="text/css">
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.6.0.min.js"></script>
+    <title>График {{ ticker }}</title>
 </head>
 <body>
-    <h1>{{ ticker }} Closing Prices Over Last Year</h1>
-    <!-- Вставляем div и script для графика -->
+    <h1>График акций {{ ticker }}</h1>
     <div>
-        {{ div|safe }}
+        {{ chart|safe }}
     </div>
-    {{ script|safe }}
 </body>
 </html>
