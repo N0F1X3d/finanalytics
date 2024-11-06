@@ -7,7 +7,7 @@ import plotly.express as px
 def get_chart_html(ticker):
     # Создаем сессию
     with requests.Session() as session:
-        interval = 10
+        interval = 4
         # Получаем данные с помощью apimoex
         #end = 
         #start = 
