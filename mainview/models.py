@@ -6,6 +6,11 @@ class Security(models.Model):
     current_price = models.FloatField(default=0)
     #market_cap = models.BigIntegerField()
 
+class Data(models.Model):
+    security = models.ForeignKey(Security, on_delete=models.CASCADE)
+    date_time = models.DateTimeField()
+    price = models.FloatField()
+
 class Bond(models.Model):
     ticker = models.CharField(max_length=36, unique=True)
     name = models.CharField(max_length=100)

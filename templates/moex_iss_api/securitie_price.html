@@ -6,6 +6,32 @@
 </head>
 <body>
     <h1>График акций {{ ticker }}</h1>
+    
+    <!-- Форма для выбора диапазона дат -->
+    <form method="post" action="">
+        {% csrf_token %}
+        <div>
+            <label for="id_start">Начало котировок:</label>
+            {{ form.start }}
+            {% if form.start.errors %}
+                <div style="color: red;">
+                    {{ form.start.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <label for="id_end">Конец котировок:</label>
+            {{ form.end }}
+            {% if form.end.errors %}
+                <div style="color: red;">
+                    {{ form.end.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit">Построить график</button>
+    </form>
+    
+    <!-- Отображение графика -->
     <div>
         {{ chart|safe }}
     </div>

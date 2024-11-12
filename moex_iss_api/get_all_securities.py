@@ -20,7 +20,6 @@ def get_securities_list():
 
             # Преобразуем в DataFrame
             df = pd.DataFrame(securities_data, columns=securities_columns)
-
             # Оставляем только важные столбцы и сохраняем их в базу данных
             match market:
                 case 'shares':
@@ -28,23 +27,26 @@ def get_securities_list():
                     df['PREVPRICE'] = df['PREVPRICE'].fillna(0.0)
                     # Проход по каждой строке DataFrame
                     for _, row in df.iterrows():
-                        Security.objects.update_or_create(
-                            ticker=row['SECID'],
-                            defaults={
-                                'name': row['SHORTNAME'],
-                                'current_price': row['PREVPRICE'],
-                            }
-                        )
+                        if row['PREVPRICE'] > 0.0:
+                            Security.objects.update_or_create(
+                                ticker=row['SECID'],
+                                defaults={
+                                    'name': row['SHORTNAME'],
+                                    'current_price': row['PREVPRICE'],
+                                }
+                            )
                 case 'bonds':
                     df = df[['SECID', 'SHORTNAME', 'COUPONPERCENT', 'MATDATE']]
                     df['COUPONPERCENT'] = df['COUPONPERCENT'].fillna(0.0)
-                    df = df[df['MATDATE']>=str(datetime.date.today())]
+                    df = df[df['MATDATE'] >= str(datetime.date.today())]
+                    
                     # Проход по каждой строке DataFrame
                     for _, row in df.iterrows():
-                        Bond.objects.update_or_create(
-                            ticker=row['SECID'],
-                            defaults={
-                                'name': row['SHORTNAME'],
-                                'current_price': row['COUPONPERCENT'],
-                            }
-                        )
+                        if row['COUPONPERCENT'] > 0.0:
+                            Bond.objects.update_or_create(
+                                ticker=row['SECID'],
+                                defaults={
+                                    'name': row['SHORTNAME'],
+                                    'current_price': row['COUPONPERCENT'],
+                                }
+                            )

@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising, process_securities
-from moex_iss_api import take_data_frame, get_events, get_news
+from moex_iss_api import take_data_frame, get_events, get_news, get_all_securities
 from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
+from .forms import ChartForm
 
 #Главная страница
 def homepageview(request):
@@ -55,12 +56,14 @@ def securities_page(request):
 
         if queryset is not None:
             # Применяем фильтры
+            filters = {}
             if min_value:
-                queryset = queryset.filter(current_price__gte=min_value)
+                filters['current_price__gte'] = min_value
             if max_value:
-                queryset = queryset.filter(current_price__lte=max_value)
+                filters['current_price__lte'] = max_value
             if ticker:
-                queryset = queryset.filter(ticker__icontains=ticker)
+                filters['ticker__icontains'] = ticker
+            queryset = queryset.filter(**filters)
 
             # Применяем сортировку
             if sort_by:
@@ -85,10 +88,21 @@ def securities_page(request):
 
 #Страница с графиком акции
 def securitie_price_chart(request, ticker):
-    chart_html = take_data_frame.get_chart_html(ticker)
-
-    # Передаем график в шаблон
-    return render(request, 'moex_iss_api/securitie_price.html', {'chart': chart_html, 'ticker': ticker})
+    form = ChartForm(request.POST or None, ticker=ticker)
+    chart_html = None
+    
+    if form.is_valid():
+        # Получаем данные начала и окончания из формы
+        start = form.cleaned_data.get('start')
+        end = form.cleaned_data.get('end')
+        
+        # Передаем данные в get_chart_html
+        chart_html = take_data_frame.get_chart_html(ticker, start=start, end=end)
+    else:
+        # Инициализируем график без фильтрации дат, если форма не заполнена
+        chart_html = take_data_frame.get_chart_html(ticker)
+    
+    return render(request, 'moex_iss_api/securitie_price.html', {'chart': chart_html, 'ticker': ticker, 'form': form})
 
 def search_securities(request):
     query = request.GET.get('query', '')
