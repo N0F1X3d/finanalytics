@@ -42,7 +42,7 @@
 
         .leader-card .btn {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #dc3545;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
@@ -50,7 +50,7 @@
         }
 
         .leader-card .btn:hover {
-            background-color: #0056b3;
+            background-color: #b52c36;
         }
 
     </style>
@@ -61,10 +61,11 @@
         <div class="leaderboard">
             {% for stock in fall_leaders %}
             <div class="leader-card">
-                <h3>{{ stock.SHORTNAME }}</h3>
-                <p>Падение: {{ stock.DROP }}%</p>
-                <p>Цена: {{ stock.LAST }} руб.</p>
-                <a href="/securities_price/{{ stock.SECID }}/" class="btn btn-primary">Подробнее</a>
+                <h3>{{ stock.ticker }}</h3>
+                <p>Падение: {{ stock.change|floatformat:2 }}%</p>
+                <p>Максимальная цена: {{ stock.start_price }} руб.</p>
+                <p>Минимальная цена: {{ stock.end_price }} руб.</p>
+                <a href="/securities_price/{{ stock.ticker }}/" class="btn btn-primary">Подробнее</a>
             </div>
             {% endfor %}
         </div>

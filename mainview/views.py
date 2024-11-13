@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising, process_securities
-from moex_iss_api import take_data_frame, get_events, get_news, get_all_securities
+from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising
+from moex_iss_api import take_data_frame, get_events, get_news
 from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
@@ -9,6 +9,7 @@ from .forms import ChartForm
 
 #Главная страница
 def homepageview(request):
+    #take_data_frame.fill_data()
     return render(request, 'mainview/mainview.html')
 
 #Страница со списком новостей
@@ -113,14 +114,12 @@ def search_securities(request):
     return JsonResponse({'filtered_securities': filtered_securities})
 
 # Асинхронное представление для лидеров роста
-async def growth_leaders_view(request):
-    growth_leaders = await get_leaders_rising()  # Асинхронный вызов функции
+def growth_leaders_view(request):
+    growth_leaders = get_leaders_rising()
     context = {'growth_leaders': growth_leaders}
     return render(request, 'mainview/growth_leaders.html', context)
 
-# Асинхронное представление для лидеров падений
-async def fall_leaders_view(request):
-    fall_leaders = await get_leaders_falling()  # Асинхронный вызов функции
+def fall_leaders_view(request):
+    fall_leaders = get_leaders_falling()
     context = {'fall_leaders': fall_leaders}
     return render(request, 'mainview/fall_leaders.html', context)
-

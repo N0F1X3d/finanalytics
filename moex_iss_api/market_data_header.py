@@ -1,65 +1,61 @@
-import httpx
+from datetime import datetime, timedelta
+from django.db.models import F, FloatField, ExpressionWrapper
+from mainview.models import Data, Security
 
-async def get_market_data():
-    base_url = 'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json'
-    
-    params = {
-        'iss.meta': 'off',  # Убираем метаданные
-        'sort_column': 'VALUE',  # Сортируем по объему торгов
-        'sort_order': 'desc',
-        'limit': 10  # Ограничиваем количество записей
-    }
+def get_leaders_rising():
+    # Определяем временной период для анализа
+    time_period = datetime.now() - timedelta(days=7)
+    securities = Security.objects.all()
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(base_url, params=params)
-        if response.status_code == 200:
-            return response.json()
-        return None
+    growth_leaders = []
+    for security in securities:
+        # Находим начальную цену (самая ранняя дата в периоде)
+        start_data = Data.objects.filter(security=security, date_time__gte=time_period).order_by('date_time').first()
+        # Находим конечную цену (самая поздняя дата в периоде)
+        end_data = Data.objects.filter(security=security, date_time__gte=time_period).order_by('-date_time').first()
 
-
-async def get_leaders_rising():
-    base_url = 'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?sort_order=desc&sort_column=LASTTOPREVPRICE&limit=10'
-    params = {
-        'iss.meta': 'off',
-        'sort_column': 'LASTTOPREVPRICE',  # Сортировка по изменению цены
-        'sort_order': 'desc',
-        'limit': 10  # Получаем топ 10 лидеров
-    }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(base_url, params=params)
-        if response.status_code == 200:
-            return response.json()
-        return None
-    
-
-async def get_leaders_falling():
-    base_url = 'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?sort_order=asc&sort_column=LASTTOPREVPRICE&limit=10'
-    params = {
-        'iss.meta': 'off',
-        'sort_column': 'LASTTOPREVPRICE',  # Сортировка по изменению цены
-        'sort_order': 'asc',
-        'limit': 10  # Получаем топ 10 лидеров
-    }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(base_url, params=params)
-        if response.status_code == 200:
-            return response.json()
-        return None
-
-def process_securities(data):
-    securities_list = []
-    if data:
-        for item in data['securities']['data']:
-            securities_list.append({
-                'secid': item[0],  # Тикер акции
-                'shortname': item[2],  # Название акции
-                'last_price': item[10],  # Последняя цена
-                'change_percent': item[12]  # Изменение в процентах
+        # Проверяем, что есть данные для обеих дат
+        if start_data and end_data:
+            start_price = start_data.price
+            end_price = end_data.price
+            # Вычисляем процент изменения
+            change = ((end_price - start_price) / start_price) * 100
+            growth_leaders.append({
+                'ticker': security.ticker,
+                'start_price': start_price,
+                'end_price': end_price,
+                'change': change
             })
-    return securities_list
 
+    # Сортируем по росту и отбираем топ-10
+    growth_leaders = sorted(growth_leaders, key=lambda x: x['change'], reverse=True)[:10]
+    return growth_leaders
 
+def get_leaders_falling():
+    # Определяем временной период для анализа
+    time_period = datetime.now() - timedelta(days=7)
+    securities = Security.objects.all()
 
-    
+    fall_leaders = []
+    for security in securities:
+        # Находим начальную цену
+        start_data = Data.objects.filter(security=security, date_time__gte=time_period).order_by('date_time').first()
+        # Находим конечную цену
+        end_data = Data.objects.filter(security=security, date_time__gte=time_period).order_by('-date_time').first()
+
+        # Проверяем, что есть данные для обеих дат
+        if start_data and end_data:
+            start_price = start_data.price
+            end_price = end_data.price
+            # Вычисляем процент изменения
+            change = ((end_price - start_price) / start_price) * 100
+            fall_leaders.append({
+                'ticker': security.ticker,
+                'start_price': start_price,
+                'end_price': end_price,
+                'change': change
+            })
+
+    # Сортируем по убыванию и отбираем топ-10
+    fall_leaders = sorted(fall_leaders, key=lambda x: x['change'])[:10]
+    return fall_leaders

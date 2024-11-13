@@ -10,7 +10,7 @@ class ChartForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.ticker = kwargs.pop('ticker', None)
         super().__init__(*args, **kwargs)
-
+        
     def clean(self):
         cleaned_data = super().clean()
         start = cleaned_data.get("start")

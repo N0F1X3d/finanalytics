@@ -88,9 +88,39 @@ def fill_data():
     Data.objects.all().delete()
     with requests.Session() as session:
         for security in securities:
-            data = apimoex.get_market_candles(session=session, security=security.ticker, interval=24)
+            data = apimoex.get_market_candles(session=session, security=security.ticker, interval=24, start=datetime.now().date()-timedelta(days=365), end=datetime.now().date())
             df = pd.DataFrame(data)
+            
+            # Проверка: если df пустой, переход к следующему тикеру
+            if df.empty:
+                print(f"No data available for ticker {security.ticker}")
+                continue
+            
+            # Если df не пустой, преобразуем столбец 'begin' в тип datetime
             df['begin'] = pd.to_datetime(df['begin'])
+            
+            for _, row in df.iterrows():
+                Data.objects.create(
+                    security=security,
+                    date_time=row['begin'],
+                    price=row['close']
+                )
+
+def fill_data_every_day():
+    securities = Security.objects.annotate(ticker_length=Length('ticker')).filter(ticker_length__lte=4)
+    with requests.Session() as session:
+        for security in securities:
+            data = apimoex.get_market_candles(session=session, security=security.ticker, interval=24, start=datetime.now().date() - timedelta(days=1), end=datetime.now().date())
+            df = pd.DataFrame(data)
+            
+            # Проверка: если df пустой, переход к следующему тикеру
+            if df.empty:
+                print(f"No data available for ticker {security.ticker}")
+                continue
+            
+            # Если df не пустой, преобразуем столбец 'begin' в тип datetime
+            df['begin'] = pd.to_datetime(df['begin'])
+            
             for _, row in df.iterrows():
                 Data.objects.create(
                     security=security,
