@@ -6,6 +6,7 @@ from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
 from .forms import ChartForm
+from ml.predictor import train_and_predict, generate_graph
 
 #Главная страница
 def homepageview(request):
@@ -123,3 +124,16 @@ def fall_leaders_view(request):
     fall_leaders = get_leaders_falling()
     context = {'fall_leaders': fall_leaders}
     return render(request, 'mainview/fall_leaders.html', context)
+
+def predict_prices(request, ticker):
+    # Получаем объект Security для тикера
+    security = Security.objects.get(ticker=ticker)
+
+    # Обучаем модель и получаем предсказания
+    real_prices, predicted_prices = train_and_predict(ticker)
+
+    # Генерируем график
+    graph_html = generate_graph(ticker, real_prices, predicted_prices)
+
+    # Рендерим шаблон с графиком
+    return render(request, 'mainview/predictions.html', {'graph': graph_html, 'ticker': ticker})

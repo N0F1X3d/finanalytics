@@ -10,4 +10,5 @@ urlpatterns = [
     path('events/', views.events_summary, name='EventsSummary'),
     path('growth-leaders/', views.growth_leaders_view, name='GrowthLeaders'),
     path('fall-leaders/', views.fall_leaders_view, name='FallLeaders'),
+    path('predict/<str:ticker>/', views.predict_prices, name='predict_stock_price'),
 ]
