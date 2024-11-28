@@ -9,10 +9,16 @@
 </head>
 <body>
     <div style="text-align: center; margin-top: 20px;">
-        <h1>График предсказанных цен для {{ ticker }}</h1>
+        <h1>Графики предсказанных цен для {{ ticker }}</h1>
+        <h2>Обратите внимание, точность прогноза составляет {{ accuracy }}%!</h2>
+        <h3>Тестовый:</h3>
         <div>
             <!-- Вставка графика -->
-            {{ graph_html|safe }}
+            {{ graph|safe }}
+        </div>
+        <h3>Будущие цены</h3>
+        <div>
+            {{ graph_future|safe }}
         </div>
     </div>
 </body>

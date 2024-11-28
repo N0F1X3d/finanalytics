@@ -14,18 +14,7 @@ def get_stock_data(ticker):
     
     # Преобразуем queryset в DataFrame
     df = pd.DataFrame.from_records(data.values('date_time', 'price'))
-
-    # Проверка исходных данных
-    print(df['date_time'].head())  # Печать первых нескольких значений
-
-    # Преобразуем 'date_time' в datetime, если это необходимо
-    df['date_time'] = pd.to_datetime(df['date_time'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
-
-    # Проверка на наличие некорректных дат
-    if df['date_time'].isnull().any():
-        invalid_dates = df[df['date_time'].isnull()]
-        print(f"Некорректные даты: {invalid_dates}")  # Печать некорректных дат
-        raise ValueError("Некорректные значения в столбце date_time")
+    df['date_time'] = pd.to_datetime(df['date_time'])
 
     # Нормализация цен
     scaler = MinMaxScaler(feature_range=(0, 1))
@@ -75,26 +64,17 @@ def train_and_predict(ticker, seq_length=60):
     predictions = scaler.inverse_transform(predictions)
     real_prices = scaler.inverse_transform(y_test.reshape(-1, 1))
 
-    return real_prices, predictions
+    # Вычисление точности (MAPE)
+    absolute_errors = abs(real_prices - predictions)
+    percentage_errors = (absolute_errors / real_prices) * 100
+    mape = percentage_errors.mean()  # Средняя абсолютная процентная ошибка
+    accuracy = 100 - mape  # Точность в процентах
+    accuracy = round(accuracy, 2)
+    return real_prices, predictions, accuracy
 
 def generate_graph(ticker, predicted_prices, dates):
     # Убедимся, что predicted_prices одномерный массив
     predicted_prices = np.array(predicted_prices).flatten()
-
-    # Проверка и преобразование dates в подходящий формат
-    if isinstance(dates, (np.ndarray, list)):
-        dates = pd.to_datetime(dates, errors='coerce')  # Преобразуем в datetime, если это нужно
-    elif isinstance(dates, pd.Series):
-        # Если это уже Series, то можно оставить как есть
-        dates = pd.to_datetime(dates, errors='coerce')  # Для уверенности
-    else:
-        raise TypeError(f"Некорректный тип для даты: {type(dates)}")
-
-    # Проверка на наличие некорректных значений
-    if dates.isnull().any():  # Проверяем на NaT (некорректные даты)
-        print(f"Некорректные даты: {dates[dates.isnull()]}")
-        raise ValueError("Некорректные даты найдены в данных")
-
     # Проверка соответствия длины данных
     if len(dates) != len(predicted_prices):
         raise ValueError("Количество дат не совпадает с количеством предсказанных цен")
@@ -104,7 +84,6 @@ def generate_graph(ticker, predicted_prices, dates):
         'Дата': dates,  # Даты уже в формате datetime
         'Предсказанная цена': predicted_prices
     })
-
     # Создание графика с использованием Plotly Express
     try:
         fig = px.line(df, x='Дата', y='Предсказанная цена', title=f'Прогноз цен для {ticker}', labels={'Дата': 'Дата', 'Предсказанная цена': 'Цена'})
@@ -123,5 +102,4 @@ def generate_graph(ticker, predicted_prices, dates):
 
     # Генерация HTML для графика
     graph_html = fig.to_html(full_html=False)
-
     return graph_html

@@ -1,16 +1,15 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from moex_iss_api.market_data_header import get_leaders_falling, get_leaders_rising
-from moex_iss_api import take_data_frame, get_events, get_news
+from moex_iss_api import take_data_frame, get_events, get_news, get_all_securities
 from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
 from .forms import ChartForm
-from ml.predictor import train_and_predict, generate_graph
+from ml.predictor import train_and_predict, generate_graph, get_stock_data
 
 #Главная страница
 def homepageview(request):
-    #take_data_frame.fill_data()
     return render(request, 'mainview/mainview.html')
 
 #Страница со списком новостей
@@ -130,10 +129,14 @@ def predict_prices(request, ticker):
     security = Security.objects.get(ticker=ticker)
 
     # Обучаем модель и получаем предсказания
-    real_prices, predicted_prices = train_and_predict(ticker)
+    real_prices, predicted_prices, accuracy = train_and_predict(ticker)
 
-    # Генерируем график
-    graph_html = generate_graph(ticker, real_prices, predicted_prices)
+    # Получаем даты для тестовых данных
+    df, _ = get_stock_data(ticker)
+    seq_length = 60  # Должен совпадать с параметром seq_length в train_and_predict
+    test_dates = df['date_time'].iloc[-len(predicted_prices):]  # Берем соответствующие даты
 
+    # Генерируем график с учетом дат
+    graph_html = generate_graph(ticker, predicted_prices, test_dates)
     # Рендерим шаблон с графиком
-    return render(request, 'mainview/predictions.html', {'graph': graph_html, 'ticker': ticker})
+    return render(request, 'mainview/predictions.html', {'graph': graph_html, 'ticker': ticker, 'accuracy' : accuracy})
