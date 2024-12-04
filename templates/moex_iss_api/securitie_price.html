@@ -7,6 +7,11 @@
 <body>
     <h1>График акций {{ ticker }}</h1>
     
+    <!-- Кнопка для перехода на страницу предсказания -->
+    <div>
+        <a href="{% url 'predict_stock_price' ticker %}" style="color: blue; text-decoration: underline;">Перейти к предсказанию цен</a>
+    </div>
+    
     <!-- Форма для выбора диапазона дат -->
     <form method="post" action="">
         {% csrf_token %}

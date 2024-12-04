@@ -6,10 +6,11 @@ from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
 from .forms import ChartForm
-from ml.predictor import train_and_predict, generate_graph, get_stock_data
+from ml.predictor import generate_graph, get_stock_data, train_and_predict, generate_future_graph
 
 #Главная страница
 def homepageview(request):
+    #take_data_frame.fill_data()
     return render(request, 'mainview/mainview.html')
 
 #Страница со списком новостей
@@ -129,14 +130,10 @@ def predict_prices(request, ticker):
     security = Security.objects.get(ticker=ticker)
 
     # Обучаем модель и получаем предсказания
-    real_prices, predicted_prices, accuracy = train_and_predict(ticker)
+    last_date, last_price, future_dates, future_prices = train_and_predict(ticker)
 
-    # Получаем даты для тестовых данных
-    df, _ = get_stock_data(ticker)
-    seq_length = 60  # Должен совпадать с параметром seq_length в train_and_predict
-    test_dates = df['date_time'].iloc[-len(predicted_prices):]  # Берем соответствующие даты
+    # Генерируем график с реальной последней ценой и прогнозом
+    graph_html = generate_future_graph(ticker, last_date, last_price, future_dates, future_prices)
 
-    # Генерируем график с учетом дат
-    graph_html = generate_graph(ticker, predicted_prices, test_dates)
     # Рендерим шаблон с графиком
-    return render(request, 'mainview/predictions.html', {'graph': graph_html, 'ticker': ticker, 'accuracy' : accuracy})
+    return render(request, 'mainview/predictions.html', {'graph': graph_html, 'ticker': ticker})
