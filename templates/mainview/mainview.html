@@ -11,25 +11,16 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-left">
-            <a href="#">FinAnal</a>
-            <!-- <button class="" type="button" data-toggle="" data-target="" aria-controls="" aria-expanded="false" aria-label="Toggle navigation">
-                <span class=""></span>
-            </button> -->
+            <a href="{% url 'Главная' %}">FinAnal</a>
         </div>
         
         <div class="navbar-mid" id="navbarNav">
             <ul class="navbar-list">
-                <li class="">
-                    <a class="nav-link" href="#">Домой</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Идеи</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Лента новостей</a>
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
                 </li>
             </ul>
         </div>      
@@ -87,10 +78,6 @@
             <div class="summary-content">
 
                 <div class="summary-block">
-                    <a href="" class="summary-link">Популярные акции</a>
-                </div>
-
-                <div class="summary-block">
                     <a href="{% url 'FallLeaders'%}" class="summary-link">Лидеры падений</a>
                 </div>
 
@@ -98,30 +85,8 @@
                     <a href="{% url 'GrowthLeaders'%}" class="summary-link">Лидеры роста</a>
                 </div>
 
-                <div class="summary-block">
-                    <a href="{% url 'NewsSummary' %}" class="summary-link">Новости</a>
-                </div>
-
             </div>
         </div>
-
-
-        <!-- Charts Section -->
-        <div class="chart-container">
-            <h2 class="text-center">Financial Performance Overview</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>Revenue Growth</h4>
-                    <img src="https://via.placeholder.com/500x300" alt="Revenue Growth Chart" class="img-fluid">
-                </div>
-                <div class="col-md-6">
-                    <h4>Profit Loss</h4>
-                    <img src="https://via.placeholder.com/500x300" alt="Profit and Loss Chart" class="img-fluid">
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2024 FinAnal. All rights reserved.</p>

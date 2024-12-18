@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Новости Российского рынка</title>
+    <link rel="stylesheet" href="../../static/styles/mainpage.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -108,6 +109,22 @@
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'Главная' %}">FinAnal</a>
+        </div>
+        
+        <div class="navbar-mid" id="navbarNav">
+            <ul class="navbar-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
+                </li>
+            </ul>
+        </div>      
+    </nav>
 
     <h1 class = "news-header">Новости Российского рынка</h1>
 
@@ -130,5 +147,8 @@
         {% endfor %}
     </div>
 
+    <footer class="footer">
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
 </body>
 </html>

@@ -56,6 +56,22 @@
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'Главная' %}">FinAnal</a>
+        </div>
+        
+        <div class="navbar-mid" id="navbarNav">
+            <ul class="navbar-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
+                </li>
+            </ul>
+        </div>      
+    </nav>
     <div class="container">
         <h1>Лидеры падений</h1>
         <div class="leaderboard">
@@ -70,5 +86,8 @@
             {% endfor %}
         </div>
     </div>
+    <footer class="footer">
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
 </body>
 </html>

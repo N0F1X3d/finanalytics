@@ -4,28 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список ценных бумаг</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: left;
-        }
-    </style>
+    <link rel="stylesheet" href="../../static/styles/mainpage.css">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'Главная' %}">FinAnal</a>
+        </div>
+        
+        <div class="navbar-mid" id="navbarNav">
+            <ul class="navbar-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
+                </li>
+            </ul>
+        </div>      
+    </nav>
     <h1>Список ценных бумаг</h1>
 
     <!-- Кнопки для выбора типа ценных бумаг -->
     <form method="get">
-        <button type="submit" name="type" value="shares">Show Shares</button>
-        <button type="submit" name="type" value="bonds">Show Bonds</button>
+        <button type="submit" name="type" value="shares">Акции</button>
+        <button type="submit" name="type" value="bonds">Облигации</button>
     </form>
 
     <!-- Фильтры и сортировка -->
@@ -68,7 +71,13 @@
         <tbody>
             {% for security in securities %}
             <tr>
-                <td>{{ security.ticker }}</td>
+                <td>
+                    {% if security_type == 'shares' %}
+                        <a href="{% url 'SecuritiesPriceChart' ticker=security.ticker %}">{{ security.ticker }}</a>
+                    {% else %}
+                        {{ security.ticker }}
+                    {% endif %}
+                </td>
                 <td>{{ security.name }}</td>
                 <td>
                     {% if security_type == 'shares' %}
@@ -84,6 +93,10 @@
     {% else %}
     <p>Нет данных, пожалуйста выберите тип ценных бумаг.</p>
     {% endif %}
+    
+    <footer class="footer">
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
     
 </body>
 </html>

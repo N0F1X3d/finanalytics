@@ -6,20 +6,34 @@
     <title>График предсказанных цен для {{ ticker }}</title>
     <!-- Подключение Plotly.js для отображения графика -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="../../static/styles/mainpage.css">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'Главная' %}">FinAnal</a>
+        </div>
+        
+        <div class="navbar-mid" id="navbarNav">
+            <ul class="navbar-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
+                </li>
+            </ul>
+        </div>      
+    </nav>
     <div style="text-align: center; margin-top: 20px;">
         <h1>Графики предсказанных цен для {{ ticker }}</h1>
-        <h2>Ку</h2>
-        <h3>Тестовый:</h3>
         <div>
             <!-- Вставка графика -->
             {{ graph|safe }}
         </div>
-        <h3>Будущие цены</h3>
-        <div>
-            {{ graph_future|safe }}
-        </div>
     </div>
+    <footer class="footer">
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
 </body>
 </html>

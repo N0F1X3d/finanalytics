@@ -2,9 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>График {{ ticker }}</title>
+    <link rel="stylesheet" href="../../static/styles/mainpage.css">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'Главная' %}">FinAnal</a>
+        </div>
+        
+        <div class="navbar-mid" id="navbarNav">
+            <ul class="navbar-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Securities' %}">Акции</a>  <!-- Ссылка на страницу с акциями -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'NewsSummary' %}">Лента новостей</a>
+                </li>
+            </ul>
+        </div>      
+    </nav>
     <h1>График акций {{ ticker }}</h1>
     
     <!-- Кнопка для перехода на страницу предсказания -->
@@ -40,5 +58,8 @@
     <div>
         {{ chart|safe }}
     </div>
+    <footer class="footer">
+        <p>&copy; 2024 FinAnal. All rights reserved.</p>
+    </footer>
 </body>
 </html>

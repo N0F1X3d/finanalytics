@@ -6,7 +6,7 @@ from django.core.cache import cache
 from mainview.models import Security, Bond
 from django.db.models import Q
 from .forms import ChartForm
-from ml.predictor import generate_graph, get_stock_data, train_and_predict, generate_future_graph
+from ml.predictor import get_stock_data, train_and_predict, generate_future_graph
 
 #Главная страница
 def homepageview(request):
