@@ -10,7 +10,6 @@ from ml.predictor import get_stock_data, train_and_predict, generate_future_grap
 
 #Главная страница
 def homepageview(request):
-    #take_data_frame.fill_data()
     return render(request, 'mainview/mainview.html')
 
 #Страница со списком новостей
